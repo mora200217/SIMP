@@ -20,10 +20,13 @@ module i2c_master (
     reg [3:0] state;
     reg [7:0] shift_reg;
     reg [3:0] bit_count;
-    reg sda_out;
-    reg sda_enable;
 
-    assign sda = sda_enable ? sda_out : 1'bz;  // Open-drain SDA line
+    reg sda_out;
+    // reg scl_follow; 
+    reg sda_enable_master;
+
+    assign sda = sda_enable_master ? sda_out : 1'bz;  // Open-drain SDA line
+    // assign scl = scl_follow ? clk : 1'b1;  
 
     localparam IDLE  = 4'b0000,
                START = 4'b0001,
@@ -35,17 +38,25 @@ module i2c_master (
                READ  = 4'b0111,
                STOP  = 4'b1000;
 
+    always @(clk) begin
+        if (busy) scl = clk; 
+        else scl = 1; 
+    end 
+
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
+            $display("[i2c state] In reset"); 
             state <= IDLE;
             scl <= 1;
+            // scl_follow <= 0; 
             sda_out <= 1;
-            sda_enable <= 1;
+            sda_enable_master <= 1;
             busy <= 0;
             done <= 0;
         end else begin
             case (state)
                 IDLE: begin
+                    $display("[i2c state] IDLE"); 
                     busy <= 0;
                     done <= 0;
                     data_out <= 0; 
@@ -56,27 +67,32 @@ module i2c_master (
                 end
 
                 START: begin
+                     $display("[i2c state] START"); 
                     sda_out <= 0; // Start condition
-                    scl <= 1;
+                    // scl_follow <= 1;
                     state <= ADDR;
+                    sda_enable_master <= 1; 
                     shift_reg <= {slave_addr, read_write}; // Address + R/W bit
                     bit_count <= 8;
                 end
 
                 ADDR: begin
+                    $display("[i2c state] ADDR"); 
                     if (bit_count > 0) begin
+                    
                         sda_out <= shift_reg[7];
                         shift_reg <= shift_reg << 1;
                         bit_count <= bit_count - 1;
                     end else begin
-                        sda_enable <= 0; // Release SDA for ACK
+                        $display("[i2c state] ADDR"); 
+                        sda_enable_master <= 0; // Release SDA for ACK
                         state <= ACK1;
                     end
                 end
 
                 ACK1: begin
                     if (!sda) begin // Slave ACK received
-                        sda_enable <= 1;
+                        
                         state <= (read_write) ? READ : WRITE;
                         shift_reg <= data_in;
                         bit_count <= 8;
@@ -89,7 +105,7 @@ module i2c_master (
                         shift_reg <= shift_reg << 1;
                         bit_count <= bit_count - 1;
                     end else begin
-                        sda_enable <= 0; // Release SDA for ACK
+                        sda_enable_master <= 0; // Release SDA for ACK
                         state <= ACK2;
                     end
                 end
@@ -102,8 +118,11 @@ module i2c_master (
 
                 READ: begin
                     if (bit_count > 0) begin
-                        sda_enable <= 0; // Release SDA for reading
+                        $display("count (%d) sda: %d",bit_count,  sda); 
+                        sda_enable_master <= 0; // Release SDA for reading
                         data_out <= {data_out[6:0], sda};
+
+
                         bit_count <= bit_count - 1;
                     end else begin
                         state <= STOP;
@@ -111,10 +130,12 @@ module i2c_master (
                 end
 
                 STOP: begin
+                    sda_enable_master <= 1;
                     sda_out <= 0;
                     scl <= 1;
                     sda_out <= 1; // Stop condition
                     done <= 1;
+                    // scl_follow <= 0; 
                     busy <= 0;
                     state <= IDLE;
                 end
