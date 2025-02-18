@@ -1,4 +1,4 @@
-`include "i2c_module/master_controller.v"
+`include "../src/interfaces/i2c/i2c_master.v"
 
 module simp (
     input clk, // FPGA buil-in clock 
@@ -46,7 +46,7 @@ initial begin
     data_in = 0; 
 end 
 
-master_controller i2c_master_uut(
+i2c_master i2c_master_uut(
         // input  
         .clk(clk),
         .rst_n(rst_n),

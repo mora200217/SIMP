@@ -1,0 +1,11 @@
+
+State Machine - |simp|i2c_master:i2c_master_uut|state
+Name state.READ state.ACK2 state.WRITE state.ACK1 state.ADDR state.START state.IDLE state.STOP 
+state.IDLE 0 0 0 0 0 0 0 0 
+state.START 0 0 0 0 0 1 1 0 
+state.ADDR 0 0 0 0 1 0 1 0 
+state.ACK1 0 0 0 1 0 0 1 0 
+state.WRITE 0 0 1 0 0 0 1 0 
+state.ACK2 0 1 0 0 0 0 1 0 
+state.READ 1 0 0 0 0 0 1 0 
+state.STOP 0 0 0 0 0 0 1 1 
