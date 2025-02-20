@@ -17,7 +17,7 @@
 // PROGRAM "Quartus Prime"
 // VERSION "Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition"
 
-// DATE "02/18/2025 08:06:36"
+// DATE "02/18/2025 09:06:42"
 
 // 
 // Device: Altera EP4CE10E22C8 Package TQFP144
@@ -36,14 +36,14 @@ module simp (
 	start);
 input 	clk;
 output 	scl;
-inout 	sda;
+output 	sda;
 input 	start;
 
 // Design Ports Information
-// scl	=>  Location: PIN_49,	 I/O Standard: 2.5 V,	 Current Strength: Default
-// start	=>  Location: PIN_85,	 I/O Standard: 2.5 V,	 Current Strength: Default
-// clk	=>  Location: PIN_128,	 I/O Standard: 2.5 V,	 Current Strength: Default
-// sda	=>  Location: PIN_44,	 I/O Standard: 2.5 V,	 Current Strength: Default
+// scl	=>  Location: PIN_30,	 I/O Standard: 2.5 V,	 Current Strength: Default
+// start	=>  Location: PIN_58,	 I/O Standard: 2.5 V,	 Current Strength: Default
+// clk	=>  Location: PIN_23,	 I/O Standard: 2.5 V,	 Current Strength: Default
+// sda	=>  Location: PIN_28,	 I/O Standard: 2.5 V,	 Current Strength: Default
 
 
 wire gnd;
@@ -69,7 +69,7 @@ hard_block auto_generated_inst(
 	.devclrn(devclrn),
 	.devoe(devoe));
 
-// Location: IOOBUF_X5_Y0_N16
+// Location: IOOBUF_X0_Y9_N9
 cycloneive_io_obuf \sda~output (
 	.i(vcc),
 	.oe(vcc),
@@ -82,7 +82,7 @@ defparam \sda~output .bus_hold = "false";
 defparam \sda~output .open_drain_output = "false";
 // synopsys translate_on
 
-// Location: IOOBUF_X13_Y0_N16
+// Location: IOOBUF_X0_Y8_N16
 cycloneive_io_obuf \scl~output (
 	.i(vcc),
 	.oe(vcc),
@@ -95,7 +95,7 @@ defparam \scl~output .bus_hold = "false";
 defparam \scl~output .open_drain_output = "false";
 // synopsys translate_on
 
-// Location: IOIBUF_X34_Y9_N8
+// Location: IOIBUF_X21_Y0_N8
 cycloneive_io_ibuf \start~input (
 	.i(start),
 	.ibar(gnd),
@@ -105,7 +105,7 @@ defparam \start~input .bus_hold = "false";
 defparam \start~input .simulate_z_as = "z";
 // synopsys translate_on
 
-// Location: IOIBUF_X16_Y24_N15
+// Location: IOIBUF_X0_Y11_N8
 cycloneive_io_ibuf \clk~input (
 	.i(clk),
 	.ibar(gnd),
@@ -115,7 +115,7 @@ defparam \clk~input .bus_hold = "false";
 defparam \clk~input .simulate_z_as = "z";
 // synopsys translate_on
 
-// Location: IOIBUF_X5_Y0_N15
+// Location: IOIBUF_X0_Y9_N8
 cycloneive_io_ibuf \sda~input (
 	.i(sda),
 	.ibar(gnd),

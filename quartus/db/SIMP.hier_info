@@ -1,11 +1,12 @@
 |simp
 clk => clk.IN1
-scl <= i2c_master:i2c_master_uut.scl
+scl << i2c_master:i2c_master_uut.scl
 sda <> i2c_master:i2c_master_uut.sda
 start => start.IN1
 
 
 |simp|i2c_master:i2c_master_uut
+clk => scl.DATAB
 clk => bit_count[0].CLK
 clk => bit_count[1].CLK
 clk => bit_count[2].CLK
@@ -28,15 +29,13 @@ clk => data_out[6]~reg0.CLK
 clk => data_out[7]~reg0.CLK
 clk => done~reg0.CLK
 clk => busy~reg0.CLK
-clk => sda_enable.CLK
+clk => sda_enable_master.CLK
 clk => sda_out.CLK
-clk => scl~reg0.CLK
 clk => state~9.DATAIN
 rst_n => done~reg0.ACLR
 rst_n => busy~reg0.ACLR
-rst_n => sda_enable.PRESET
+rst_n => sda_enable_master.PRESET
 rst_n => sda_out.PRESET
-rst_n => scl~reg0.PRESET
 rst_n => state~11.DATAIN
 rst_n => bit_count[0].ENA
 rst_n => data_out[7]~reg0.ENA
@@ -67,16 +66,16 @@ start => state.OUTPUTSELECT
 start => state.OUTPUTSELECT
 start => state.OUTPUTSELECT
 start => Selector0.IN2
-read_write => Selector26.IN4
+read_write => Selector27.IN4
 read_write => state.DATAB
 read_write => state.DATAB
-slave_addr[0] => Selector25.IN4
-slave_addr[1] => Selector24.IN4
-slave_addr[2] => Selector23.IN4
-slave_addr[3] => Selector22.IN4
-slave_addr[4] => Selector21.IN4
-slave_addr[5] => Selector20.IN4
-slave_addr[6] => Selector19.IN4
+slave_addr[0] => Selector26.IN4
+slave_addr[1] => Selector25.IN4
+slave_addr[2] => Selector24.IN4
+slave_addr[3] => Selector23.IN4
+slave_addr[4] => Selector22.IN4
+slave_addr[5] => Selector21.IN4
+slave_addr[6] => Selector20.IN4
 data_in[0] => shift_reg.DATAB
 data_in[1] => shift_reg.DATAB
 data_in[2] => shift_reg.DATAB
@@ -102,7 +101,7 @@ data_out[6] <= data_out[6]~reg0.DB_MAX_OUTPUT_PORT_TYPE
 data_out[7] <= data_out[7]~reg0.DB_MAX_OUTPUT_PORT_TYPE
 busy <= busy~reg0.DB_MAX_OUTPUT_PORT_TYPE
 done <= done~reg0.DB_MAX_OUTPUT_PORT_TYPE
-scl <= scl~reg0.DB_MAX_OUTPUT_PORT_TYPE
+scl <= scl.DB_MAX_OUTPUT_PORT_TYPE
 sda <> sda
 
 

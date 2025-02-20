@@ -1,5 +1,5 @@
 Analysis & Synthesis report for SIMP
-Tue Feb 18 08:06:17 2025
+Tue Feb 18 09:06:08 2025
 Quartus Prime Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition
 
 
@@ -49,7 +49,7 @@ https://fpgasoftware.intel.com/eula.
 +-------------------------------------------------------------------------------------+
 ; Analysis & Synthesis Summary                                                        ;
 +------------------------------------+------------------------------------------------+
-; Analysis & Synthesis Status        ; Successful - Tue Feb 18 08:06:17 2025          ;
+; Analysis & Synthesis Status        ; Successful - Tue Feb 18 09:06:08 2025          ;
 ; Quartus Prime Version              ; 23.1std.1 Build 993 05/14/2024 SC Lite Edition ;
 ; Revision Name                      ; SIMP                                           ;
 ; Top-level Entity Name              ; simp                                           ;
@@ -236,43 +236,45 @@ Encoding Type:  One-Hot
 +-------------+------------+------------+-------------+------------+------------+-------------+------------+------------+
 
 
-+-----------------------------------------------------------------------------------------+
-; Registers Removed During Synthesis                                                      ;
-+-------------------------------------------+---------------------------------------------+
-; Register name                             ; Reason for Removal                          ;
-+-------------------------------------------+---------------------------------------------+
-; i2c_master:i2c_master_uut|bit_count[0]    ; Stuck at GND due to stuck port clock_enable ;
-; i2c_master:i2c_master_uut|scl             ; Stuck at VCC due to stuck port preset       ;
-; i2c_master:i2c_master_uut|sda_out         ; Stuck at VCC due to stuck port preset       ;
-; i2c_master:i2c_master_uut|sda_enable      ; Stuck at VCC due to stuck port preset       ;
-; i2c_master:i2c_master_uut|shift_reg[0..7] ; Stuck at GND due to stuck port clock_enable ;
-; i2c_master:i2c_master_uut|bit_count[1..3] ; Stuck at GND due to stuck port clock_enable ;
-; i2c_master:i2c_master_uut|state~12        ; Lost fanout                                 ;
-; i2c_master:i2c_master_uut|state~13        ; Lost fanout                                 ;
-; i2c_master:i2c_master_uut|state~14        ; Lost fanout                                 ;
-; i2c_master:i2c_master_uut|state.STOP      ; Stuck at GND due to stuck port clear        ;
-; i2c_master:i2c_master_uut|state.IDLE      ; Stuck at GND due to stuck port clear        ;
-; i2c_master:i2c_master_uut|state.START     ; Stuck at GND due to stuck port clear        ;
-; i2c_master:i2c_master_uut|state.ADDR      ; Stuck at GND due to stuck port clear        ;
-; i2c_master:i2c_master_uut|state.ACK1      ; Stuck at GND due to stuck port clear        ;
-; i2c_master:i2c_master_uut|state.WRITE     ; Stuck at GND due to stuck port clear        ;
-; i2c_master:i2c_master_uut|state.ACK2      ; Stuck at GND due to stuck port clear        ;
-; i2c_master:i2c_master_uut|state.READ      ; Lost fanout                                 ;
-; Total Number of Removed Registers = 26    ;                                             ;
-+-------------------------------------------+---------------------------------------------+
++-------------------------------------------------------------------------------------------+
+; Registers Removed During Synthesis                                                        ;
++---------------------------------------------+---------------------------------------------+
+; Register name                               ; Reason for Removal                          ;
++---------------------------------------------+---------------------------------------------+
+; i2c_master:i2c_master_uut|bit_count[0]      ; Stuck at GND due to stuck port clock_enable ;
+; i2c_master:i2c_master_uut|sda_out           ; Stuck at VCC due to stuck port preset       ;
+; i2c_master:i2c_master_uut|sda_enable_master ; Stuck at VCC due to stuck port preset       ;
+; i2c_master:i2c_master_uut|busy              ; Stuck at GND due to stuck port clear        ;
+; i2c_master:i2c_master_uut|shift_reg[0..7]   ; Stuck at GND due to stuck port clock_enable ;
+; i2c_master:i2c_master_uut|bit_count[1..3]   ; Stuck at GND due to stuck port clock_enable ;
+; i2c_master:i2c_master_uut|state~12          ; Lost fanout                                 ;
+; i2c_master:i2c_master_uut|state~13          ; Lost fanout                                 ;
+; i2c_master:i2c_master_uut|state~14          ; Lost fanout                                 ;
+; i2c_master:i2c_master_uut|state.STOP        ; Stuck at GND due to stuck port clear        ;
+; i2c_master:i2c_master_uut|state.IDLE        ; Stuck at GND due to stuck port clear        ;
+; i2c_master:i2c_master_uut|state.START       ; Stuck at GND due to stuck port clear        ;
+; i2c_master:i2c_master_uut|state.ADDR        ; Stuck at GND due to stuck port clear        ;
+; i2c_master:i2c_master_uut|state.ACK1        ; Stuck at GND due to stuck port clear        ;
+; i2c_master:i2c_master_uut|state.WRITE       ; Stuck at GND due to stuck port clear        ;
+; i2c_master:i2c_master_uut|state.ACK2        ; Stuck at GND due to stuck port clear        ;
+; i2c_master:i2c_master_uut|state.READ        ; Lost fanout                                 ;
+; Total Number of Removed Registers = 26      ;                                             ;
++---------------------------------------------+---------------------------------------------+
 
 
-+--------------------------------------------------------------------------------------------------------------------------------------------------+
-; Removed Registers Triggering Further Register Optimizations                                                                                      ;
-+--------------------------------------+--------------------------+--------------------------------------------------------------------------------+
-; Register name                        ; Reason for Removal       ; Registers Removed due to This Register                                         ;
-+--------------------------------------+--------------------------+--------------------------------------------------------------------------------+
-; i2c_master:i2c_master_uut|sda_out    ; Stuck at VCC             ; i2c_master:i2c_master_uut|sda_enable, i2c_master:i2c_master_uut|bit_count[3],  ;
-;                                      ; due to stuck port preset ; i2c_master:i2c_master_uut|bit_count[2], i2c_master:i2c_master_uut|bit_count[1] ;
-; i2c_master:i2c_master_uut|state~12   ; Lost Fanouts             ; i2c_master:i2c_master_uut|state.READ                                           ;
-; i2c_master:i2c_master_uut|state.ADDR ; Stuck at GND             ; i2c_master:i2c_master_uut|state.WRITE                                          ;
-;                                      ; due to stuck port clear  ;                                                                                ;
-+--------------------------------------+--------------------------+--------------------------------------------------------------------------------+
++----------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Removed Registers Triggering Further Register Optimizations                                                                                              ;
++---------------------------------------------+--------------------------+---------------------------------------------------------------------------------+
+; Register name                               ; Reason for Removal       ; Registers Removed due to This Register                                          ;
++---------------------------------------------+--------------------------+---------------------------------------------------------------------------------+
+; i2c_master:i2c_master_uut|sda_out           ; Stuck at VCC             ; i2c_master:i2c_master_uut|bit_count[3], i2c_master:i2c_master_uut|bit_count[2], ;
+;                                             ; due to stuck port preset ; i2c_master:i2c_master_uut|bit_count[1]                                          ;
+; i2c_master:i2c_master_uut|sda_enable_master ; Stuck at VCC             ; i2c_master:i2c_master_uut|shift_reg[7]                                          ;
+;                                             ; due to stuck port preset ;                                                                                 ;
+; i2c_master:i2c_master_uut|state~12          ; Lost Fanouts             ; i2c_master:i2c_master_uut|state.READ                                            ;
+; i2c_master:i2c_master_uut|state.ADDR        ; Stuck at GND             ; i2c_master:i2c_master_uut|state.WRITE                                           ;
+;                                             ; due to stuck port clear  ;                                                                                 ;
++---------------------------------------------+--------------------------+---------------------------------------------------------------------------------+
 
 
 +------------------------------------------------------+
@@ -359,7 +361,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 Info: *******************************************************************
 Info: Running Quartus Prime Analysis & Synthesis
     Info: Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition
-    Info: Processing started: Tue Feb 18 08:06:04 2025
+    Info: Processing started: Tue Feb 18 09:05:54 2025
 Info: Command: quartus_map --read_settings_files=on --write_settings_files=off Proyecto_SIMP -c SIMP
 Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
 Info (20030): Parallel compilation is enabled and will use 4 of the 4 processors detected
@@ -369,9 +371,10 @@ Info (12021): Found 2 design units, including 2 entities, in source file /home/j
 Info (12127): Elaborating entity "simp" for the top level hierarchy
 Warning (10230): Verilog HDL assignment warning at simp.v(10): truncated value with size 8 to match size of target (7) File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/top_module/simp.v Line: 10
 Info (12128): Elaborating entity "i2c_master" for hierarchy "i2c_master:i2c_master_uut" File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/top_module/simp.v Line: 64
-Warning (10230): Verilog HDL assignment warning at i2c_master.v(70): truncated value with size 32 to match size of target (4) File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/interfaces/i2c/i2c_master.v Line: 70
-Warning (10230): Verilog HDL assignment warning at i2c_master.v(90): truncated value with size 32 to match size of target (4) File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/interfaces/i2c/i2c_master.v Line: 90
-Warning (10230): Verilog HDL assignment warning at i2c_master.v(107): truncated value with size 32 to match size of target (4) File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/interfaces/i2c/i2c_master.v Line: 107
+Warning (10235): Verilog HDL Always Construct warning at i2c_master.v(42): variable "busy" is read inside the Always Construct but isn't in the Always Construct's Event Control File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/interfaces/i2c/i2c_master.v Line: 42
+Warning (10230): Verilog HDL assignment warning at i2c_master.v(85): truncated value with size 32 to match size of target (4) File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/interfaces/i2c/i2c_master.v Line: 85
+Warning (10230): Verilog HDL assignment warning at i2c_master.v(106): truncated value with size 32 to match size of target (4) File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/interfaces/i2c/i2c_master.v Line: 106
+Warning (10230): Verilog HDL assignment warning at i2c_master.v(126): truncated value with size 32 to match size of target (4) File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/interfaces/i2c/i2c_master.v Line: 126
 Warning (13009): TRI or OPNDRN buffers permanently enabled
     Warning (13010): Node "i2c_master:i2c_master_uut|sda~synth" File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/interfaces/i2c/i2c_master.v Line: 18
 Warning (13024): Output pins are stuck at VCC or GND
@@ -386,10 +389,10 @@ Info (21057): Implemented 4 device resources after synthesis - the final resourc
     Info (21058): Implemented 2 input pins
     Info (21059): Implemented 1 output pins
     Info (21060): Implemented 1 bidirectional pins
-Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 12 warnings
-    Info: Peak virtual memory: 345 megabytes
-    Info: Processing ended: Tue Feb 18 08:06:17 2025
-    Info: Elapsed time: 00:00:13
-    Info: Total CPU time (on all processors): 00:00:38
+Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 13 warnings
+    Info: Peak virtual memory: 351 megabytes
+    Info: Processing ended: Tue Feb 18 09:06:08 2025
+    Info: Elapsed time: 00:00:14
+    Info: Total CPU time (on all processors): 00:00:39
 
 

@@ -47,7 +47,7 @@ module i2c_master (
         if (!rst_n) begin
             $display("[i2c state] In reset"); 
             state <= IDLE;
-            scl <= 1;
+            //scl <= 1;
             // scl_follow <= 0; 
             sda_out <= 1;
             sda_enable_master <= 1;
@@ -132,7 +132,7 @@ module i2c_master (
                 STOP: begin
                     sda_enable_master <= 1;
                     sda_out <= 0;
-                    scl <= 1;
+                    //scl <= 1;
                     sda_out <= 1; // Stop condition
                     done <= 1;
                     // scl_follow <= 0; 
