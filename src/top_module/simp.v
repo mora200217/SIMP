@@ -4,10 +4,12 @@ module simp (
     input clk, // FPGA buil-in clock 
     output scl, // Single master I2C arch 
     inout sda, // Bidirectional natura 
-    input start
+    input start,
+	 input rst_n,
+	 output wire [3:0] state_ind
 );
 
-parameter [6:0] IMU_ADDR = 8'h68; // Direccion de dispositivo
+parameter [6:0] IMU_ADDR =7'h68; // Direccion de dispositivo
 
 // Direcciones de las aceleraciones 
 parameter [6:0] ACCX_LSB_ADDR = 7'h12;    
@@ -24,8 +26,8 @@ parameter [6:0] ACCZ_MSB_ADDR = 7'h17;
 wire done; 
 wire busy; 
 
+
 reg read_write; 
-reg rst_n; 
 
 reg [6:0] slave_addr; 
 reg [7:0] data_in; 
@@ -38,11 +40,11 @@ reg [6:0] reg_addr;
 
 
 initial begin
-    read_write = 0; 
+    read_write = 1; 
     // Definicion de registros importantes 
     slave_addr = IMU_ADDR; 
     reg_addr = 7'h12; // registro de Accx 
-    rst_n = 0; 
+	
     data_in = 0; 
 end 
 
@@ -60,7 +62,8 @@ i2c_master i2c_master_uut(
         .busy(busy),
         .done(done),
         .scl(scl),
-        .sda(sda)
+        .sda(sda),
+		  .state_ind(state_ind)
 ); 
 
 

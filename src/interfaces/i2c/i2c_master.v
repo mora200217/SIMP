@@ -10,8 +10,9 @@ module i2c_master (
     output reg busy,          // Busy flag
     output reg done,          // Transaction complete flag
     output reg scl,           // Serial Clock Line
-    inout wire sda            // Serial Data Line (Bidirectional)
-);
+    inout wire sda,            // Serial Data Line (Bidirectional)
+	output [3:0] state_ind
+	 );
 
     reg [3:0] state;
     reg [7:0] shift_reg;
@@ -27,7 +28,7 @@ module i2c_master (
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             scl <= 1;
-        end else if (busy) begin
+        end else if(busy) begin
             scl <= ~scl;  // Generate SCL clock when busy
         end
     end
@@ -128,5 +129,7 @@ module i2c_master (
             endcase
         end
     end
+	 
+	 assign state_ind = ~state; 
 
 endmodule

@@ -1,5 +1,5 @@
 Analysis & Synthesis report for SIMP
-Tue Feb 18 09:06:08 2025
+Sat Mar  1 18:22:42 2025
 Quartus Prime Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition
 
 
@@ -13,10 +13,10 @@ Quartus Prime Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition
   5. Analysis & Synthesis Source Files Read
   6. Analysis & Synthesis Resource Usage Summary
   7. Analysis & Synthesis Resource Utilization by Entity
-  8. State Machine - |simp|i2c_master:i2c_master_uut|state
-  9. Registers Removed During Synthesis
- 10. Removed Registers Triggering Further Register Optimizations
- 11. General Register Statistics
+  8. Registers Removed During Synthesis
+  9. Removed Registers Triggering Further Register Optimizations
+ 10. General Register Statistics
+ 11. Inverted Register Statistics
  12. Multiplexer Restructuring Statistics (Restructuring Performed)
  13. Parameter Settings for User Entity Instance: Top-level Entity: |simp
  14. Port Connectivity Checks: "i2c_master:i2c_master_uut"
@@ -49,16 +49,16 @@ https://fpgasoftware.intel.com/eula.
 +-------------------------------------------------------------------------------------+
 ; Analysis & Synthesis Summary                                                        ;
 +------------------------------------+------------------------------------------------+
-; Analysis & Synthesis Status        ; Successful - Tue Feb 18 09:06:08 2025          ;
+; Analysis & Synthesis Status        ; Successful - Sat Mar  1 18:22:42 2025          ;
 ; Quartus Prime Version              ; 23.1std.1 Build 993 05/14/2024 SC Lite Edition ;
 ; Revision Name                      ; SIMP                                           ;
 ; Top-level Entity Name              ; simp                                           ;
 ; Family                             ; Cyclone IV E                                   ;
-; Total logic elements               ; 0                                              ;
-;     Total combinational functions  ; 0                                              ;
-;     Dedicated logic registers      ; 0                                              ;
-; Total registers                    ; 0                                              ;
-; Total pins                         ; 4                                              ;
+; Total logic elements               ; 33                                             ;
+;     Total combinational functions  ; 33                                             ;
+;     Dedicated logic registers      ; 12                                             ;
+; Total registers                    ; 12                                             ;
+; Total pins                         ; 9                                              ;
 ; Total virtual pins                 ; 0                                              ;
 ; Total memory bits                  ; 0                                              ;
 ; Embedded Multiplier 9-bit elements ; 0                                              ;
@@ -161,10 +161,11 @@ https://fpgasoftware.intel.com/eula.
 ; Maximum allowed            ; 4           ;
 ;                            ;             ;
 ; Average used               ; 1.00        ;
-; Maximum used               ; 1           ;
+; Maximum used               ; 4           ;
 ;                            ;             ;
 ; Usage by Processor         ; % Time Used ;
 ;     Processor 1            ; 100.0%      ;
+;     Processors 2-4         ;   0.0%      ;
 +----------------------------+-------------+
 
 
@@ -178,103 +179,69 @@ https://fpgasoftware.intel.com/eula.
 +------------------------------------+-----------------+------------------------------+-----------------------------------------------------------------------------------+---------+
 
 
-+----------------------------------------------------------+
-; Analysis & Synthesis Resource Usage Summary              ;
-+---------------------------------------------+------------+
-; Resource                                    ; Usage      ;
-+---------------------------------------------+------------+
-;                                             ;            ;
-; Total combinational functions               ; 0          ;
-; Logic element usage by number of LUT inputs ;            ;
-;     -- 4 input functions                    ; 0          ;
-;     -- 3 input functions                    ; 0          ;
-;     -- <=2 input functions                  ; 0          ;
-;                                             ;            ;
-; Logic elements by mode                      ;            ;
-;     -- normal mode                          ; 0          ;
-;     -- arithmetic mode                      ; 0          ;
-;                                             ;            ;
-; Total registers                             ; 0          ;
-;     -- Dedicated logic registers            ; 0          ;
-;     -- I/O registers                        ; 0          ;
-;                                             ;            ;
-; I/O pins                                    ; 4          ;
-;                                             ;            ;
-; Embedded Multiplier 9-bit elements          ; 0          ;
-;                                             ;            ;
-; Maximum fan-out node                        ; sda~output ;
-; Maximum fan-out                             ; 1          ;
-; Total fan-out                               ; 5          ;
-; Average fan-out                             ; 0.56       ;
-+---------------------------------------------+------------+
++----------------------------------------------------------------------------------+
+; Analysis & Synthesis Resource Usage Summary                                      ;
++---------------------------------------------+------------------------------------+
+; Resource                                    ; Usage                              ;
++---------------------------------------------+------------------------------------+
+; Estimated Total logic elements              ; 33                                 ;
+;                                             ;                                    ;
+; Total combinational functions               ; 33                                 ;
+; Logic element usage by number of LUT inputs ;                                    ;
+;     -- 4 input functions                    ; 22                                 ;
+;     -- 3 input functions                    ; 9                                  ;
+;     -- <=2 input functions                  ; 2                                  ;
+;                                             ;                                    ;
+; Logic elements by mode                      ;                                    ;
+;     -- normal mode                          ; 33                                 ;
+;     -- arithmetic mode                      ; 0                                  ;
+;                                             ;                                    ;
+; Total registers                             ; 12                                 ;
+;     -- Dedicated logic registers            ; 12                                 ;
+;     -- I/O registers                        ; 0                                  ;
+;                                             ;                                    ;
+; I/O pins                                    ; 9                                  ;
+;                                             ;                                    ;
+; Embedded Multiplier 9-bit elements          ; 0                                  ;
+;                                             ;                                    ;
+; Maximum fan-out node                        ; i2c_master:i2c_master_uut|state[2] ;
+; Maximum fan-out                             ; 18                                 ;
+; Total fan-out                               ; 172                                ;
+; Average fan-out                             ; 2.69                               ;
++---------------------------------------------+------------------------------------+
 
 
-+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-; Analysis & Synthesis Resource Utilization by Entity                                                                                                                                                      ;
-+----------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+---------------------+-------------+--------------+
-; Compilation Hierarchy Node ; Combinational ALUTs ; Dedicated Logic Registers ; Memory Bits ; DSP Elements ; DSP 9x9 ; DSP 18x18 ; Pins ; Virtual Pins ; Full Hierarchy Name ; Entity Name ; Library Name ;
-+----------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+---------------------+-------------+--------------+
-; |simp                      ; 0 (0)               ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 4    ; 0            ; |simp               ; simp        ; work         ;
-+----------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+---------------------+-------------+--------------+
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis Resource Utilization by Entity                                                                                                                                                                      ;
++--------------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+---------------------------------+-------------+--------------+
+; Compilation Hierarchy Node     ; Combinational ALUTs ; Dedicated Logic Registers ; Memory Bits ; DSP Elements ; DSP 9x9 ; DSP 18x18 ; Pins ; Virtual Pins ; Full Hierarchy Name             ; Entity Name ; Library Name ;
++--------------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+---------------------------------+-------------+--------------+
+; |simp                          ; 33 (0)              ; 12 (0)                    ; 0           ; 0            ; 0       ; 0         ; 9    ; 0            ; |simp                           ; simp        ; work         ;
+;    |i2c_master:i2c_master_uut| ; 33 (33)             ; 12 (12)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |simp|i2c_master:i2c_master_uut ; i2c_master  ; work         ;
++--------------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+---------------------------------+-------------+--------------+
 Note: For table entries with two numbers listed, the numbers in parentheses indicate the number of resources of the given type used by the specific entity alone. The numbers listed outside of parentheses indicate the total resources of the given type used by the specific entity and all of its sub-entities in the hierarchy.
 
 
-Encoding Type:  One-Hot
-+-----------------------------------------------------------------------------------------------------------------------+
-; State Machine - |simp|i2c_master:i2c_master_uut|state                                                                 ;
-+-------------+------------+------------+-------------+------------+------------+-------------+------------+------------+
-; Name        ; state.READ ; state.ACK2 ; state.WRITE ; state.ACK1 ; state.ADDR ; state.START ; state.IDLE ; state.STOP ;
-+-------------+------------+------------+-------------+------------+------------+-------------+------------+------------+
-; state.IDLE  ; 0          ; 0          ; 0           ; 0          ; 0          ; 0           ; 0          ; 0          ;
-; state.START ; 0          ; 0          ; 0           ; 0          ; 0          ; 1           ; 1          ; 0          ;
-; state.ADDR  ; 0          ; 0          ; 0           ; 0          ; 1          ; 0           ; 1          ; 0          ;
-; state.ACK1  ; 0          ; 0          ; 0           ; 1          ; 0          ; 0           ; 1          ; 0          ;
-; state.WRITE ; 0          ; 0          ; 1           ; 0          ; 0          ; 0           ; 1          ; 0          ;
-; state.ACK2  ; 0          ; 1          ; 0           ; 0          ; 0          ; 0           ; 1          ; 0          ;
-; state.READ  ; 1          ; 0          ; 0           ; 0          ; 0          ; 0           ; 1          ; 0          ;
-; state.STOP  ; 0          ; 0          ; 0           ; 0          ; 0          ; 0           ; 1          ; 1          ;
-+-------------+------------+------------+-------------+------------+------------+-------------+------------+------------+
++------------------------------------------------------------------------------------+
+; Registers Removed During Synthesis                                                 ;
++-------------------------------------------+----------------------------------------+
+; Register name                             ; Reason for Removal                     ;
++-------------------------------------------+----------------------------------------+
+; i2c_master:i2c_master_uut|shift_reg[0..7] ; Stuck at GND due to stuck port data_in ;
+; Total Number of Removed Registers = 8     ;                                        ;
++-------------------------------------------+----------------------------------------+
 
 
-+-------------------------------------------------------------------------------------------+
-; Registers Removed During Synthesis                                                        ;
-+---------------------------------------------+---------------------------------------------+
-; Register name                               ; Reason for Removal                          ;
-+---------------------------------------------+---------------------------------------------+
-; i2c_master:i2c_master_uut|bit_count[0]      ; Stuck at GND due to stuck port clock_enable ;
-; i2c_master:i2c_master_uut|sda_out           ; Stuck at VCC due to stuck port preset       ;
-; i2c_master:i2c_master_uut|sda_enable_master ; Stuck at VCC due to stuck port preset       ;
-; i2c_master:i2c_master_uut|busy              ; Stuck at GND due to stuck port clear        ;
-; i2c_master:i2c_master_uut|shift_reg[0..7]   ; Stuck at GND due to stuck port clock_enable ;
-; i2c_master:i2c_master_uut|bit_count[1..3]   ; Stuck at GND due to stuck port clock_enable ;
-; i2c_master:i2c_master_uut|state~12          ; Lost fanout                                 ;
-; i2c_master:i2c_master_uut|state~13          ; Lost fanout                                 ;
-; i2c_master:i2c_master_uut|state~14          ; Lost fanout                                 ;
-; i2c_master:i2c_master_uut|state.STOP        ; Stuck at GND due to stuck port clear        ;
-; i2c_master:i2c_master_uut|state.IDLE        ; Stuck at GND due to stuck port clear        ;
-; i2c_master:i2c_master_uut|state.START       ; Stuck at GND due to stuck port clear        ;
-; i2c_master:i2c_master_uut|state.ADDR        ; Stuck at GND due to stuck port clear        ;
-; i2c_master:i2c_master_uut|state.ACK1        ; Stuck at GND due to stuck port clear        ;
-; i2c_master:i2c_master_uut|state.WRITE       ; Stuck at GND due to stuck port clear        ;
-; i2c_master:i2c_master_uut|state.ACK2        ; Stuck at GND due to stuck port clear        ;
-; i2c_master:i2c_master_uut|state.READ        ; Lost fanout                                 ;
-; Total Number of Removed Registers = 26      ;                                             ;
-+---------------------------------------------+---------------------------------------------+
-
-
-+----------------------------------------------------------------------------------------------------------------------------------------------------------+
-; Removed Registers Triggering Further Register Optimizations                                                                                              ;
-+---------------------------------------------+--------------------------+---------------------------------------------------------------------------------+
-; Register name                               ; Reason for Removal       ; Registers Removed due to This Register                                          ;
-+---------------------------------------------+--------------------------+---------------------------------------------------------------------------------+
-; i2c_master:i2c_master_uut|sda_out           ; Stuck at VCC             ; i2c_master:i2c_master_uut|bit_count[3], i2c_master:i2c_master_uut|bit_count[2], ;
-;                                             ; due to stuck port preset ; i2c_master:i2c_master_uut|bit_count[1]                                          ;
-; i2c_master:i2c_master_uut|sda_enable_master ; Stuck at VCC             ; i2c_master:i2c_master_uut|shift_reg[7]                                          ;
-;                                             ; due to stuck port preset ;                                                                                 ;
-; i2c_master:i2c_master_uut|state~12          ; Lost Fanouts             ; i2c_master:i2c_master_uut|state.READ                                            ;
-; i2c_master:i2c_master_uut|state.ADDR        ; Stuck at GND             ; i2c_master:i2c_master_uut|state.WRITE                                           ;
-;                                             ; due to stuck port clear  ;                                                                                 ;
-+---------------------------------------------+--------------------------+---------------------------------------------------------------------------------+
++------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Removed Registers Triggering Further Register Optimizations                                                                                          ;
++----------------------------------------+---------------------------+---------------------------------------------------------------------------------+
+; Register name                          ; Reason for Removal        ; Registers Removed due to This Register                                          ;
++----------------------------------------+---------------------------+---------------------------------------------------------------------------------+
+; i2c_master:i2c_master_uut|shift_reg[0] ; Stuck at GND              ; i2c_master:i2c_master_uut|shift_reg[1], i2c_master:i2c_master_uut|shift_reg[2], ;
+;                                        ; due to stuck port data_in ; i2c_master:i2c_master_uut|shift_reg[3], i2c_master:i2c_master_uut|shift_reg[4], ;
+;                                        ;                           ; i2c_master:i2c_master_uut|shift_reg[5], i2c_master:i2c_master_uut|shift_reg[6], ;
+;                                        ;                           ; i2c_master:i2c_master_uut|shift_reg[7]                                          ;
++----------------------------------------+---------------------------+---------------------------------------------------------------------------------+
 
 
 +------------------------------------------------------+
@@ -282,25 +249,37 @@ Encoding Type:  One-Hot
 +----------------------------------------------+-------+
 ; Statistic                                    ; Value ;
 +----------------------------------------------+-------+
-; Total registers                              ; 0     ;
+; Total registers                              ; 12    ;
 ; Number of registers using Synchronous Clear  ; 0     ;
 ; Number of registers using Synchronous Load   ; 0     ;
-; Number of registers using Asynchronous Clear ; 0     ;
+; Number of registers using Asynchronous Clear ; 8     ;
 ; Number of registers using Asynchronous Load  ; 0     ;
-; Number of registers using Clock Enable       ; 0     ;
+; Number of registers using Clock Enable       ; 4     ;
 ; Number of registers using Preset             ; 0     ;
 +----------------------------------------------+-------+
 
 
-+----------------------------------------------------------------------------------------------------------------------------------------------------------+
-; Multiplexer Restructuring Statistics (Restructuring Performed)                                                                                           ;
-+--------------------+-----------+---------------+----------------------+------------------------+------------+--------------------------------------------+
-; Multiplexer Inputs ; Bus Width ; Baseline Area ; Area if Restructured ; Saving if Restructured ; Registered ; Example Multiplexer Output                 ;
-+--------------------+-----------+---------------+----------------------+------------------------+------------+--------------------------------------------+
-; 8:1                ; 4 bits    ; 20 LEs        ; 16 LEs               ; 4 LEs                  ; No         ; |simp|i2c_master:i2c_master_uut|Selector11 ;
-; 9:1                ; 2 bits    ; 12 LEs        ; 8 LEs                ; 4 LEs                  ; No         ; |simp|i2c_master:i2c_master_uut|Selector10 ;
-; 10:1               ; 2 bits    ; 12 LEs        ; 8 LEs                ; 4 LEs                  ; No         ; |simp|i2c_master:i2c_master_uut|Selector14 ;
-+--------------------+-----------+---------------+----------------------+------------------------+------------+--------------------------------------------+
++-------------------------------------------------------+
+; Inverted Register Statistics                          ;
++---------------------------------------------+---------+
+; Inverted Register                           ; Fan out ;
++---------------------------------------------+---------+
+; i2c_master:i2c_master_uut|scl               ; 5       ;
+; i2c_master:i2c_master_uut|sda_out           ; 2       ;
+; i2c_master:i2c_master_uut|sda_enable_master ; 2       ;
+; Total number of inverted registers = 3      ;         ;
++---------------------------------------------+---------+
+
+
++------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Multiplexer Restructuring Statistics (Restructuring Performed)                                                                                             ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+----------------------------------------------+
+; Multiplexer Inputs ; Bus Width ; Baseline Area ; Area if Restructured ; Saving if Restructured ; Registered ; Example Multiplexer Output                   ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+----------------------------------------------+
+; 17:1               ; 7 bits    ; 77 LEs        ; 7 LEs                ; 70 LEs                 ; Yes        ; |simp|i2c_master:i2c_master_uut|shift_reg[2] ;
+; 18:1               ; 4 bits    ; 48 LEs        ; 4 LEs                ; 44 LEs                 ; Yes        ; |simp|i2c_master:i2c_master_uut|bit_count[0] ;
+; 20:1               ; 3 bits    ; 39 LEs        ; 21 LEs               ; 18 LEs                 ; Yes        ; |simp|i2c_master:i2c_master_uut|state[3]     ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+----------------------------------------------+
 
 
 +----------------------------------------------------------------------+
@@ -335,14 +314,20 @@ Note: In order to hide this table in the UI and the text report file, please set
 +-----------------------+-----------------------------+
 ; Type                  ; Count                       ;
 +-----------------------+-----------------------------+
-; boundary_port         ; 4                           ;
+; boundary_port         ; 9                           ;
+; cycloneiii_ff         ; 12                          ;
+;     CLR               ; 8                           ;
+;     ENA               ; 4                           ;
 ; cycloneiii_io_obuf    ; 1                           ;
-; cycloneiii_lcell_comb ; 1                           ;
-;     normal            ; 1                           ;
-;         0 data inputs ; 1                           ;
+; cycloneiii_lcell_comb ; 38                          ;
+;     normal            ; 38                          ;
+;         1 data inputs ; 5                           ;
+;         2 data inputs ; 2                           ;
+;         3 data inputs ; 9                           ;
+;         4 data inputs ; 22                          ;
 ;                       ;                             ;
-; Max LUT depth         ; 0.00                        ;
-; Average LUT depth     ; 0.00                        ;
+; Max LUT depth         ; 5.00                        ;
+; Average LUT depth     ; 2.87                        ;
 +-----------------------+-----------------------------+
 
 
@@ -351,7 +336,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 +----------------+--------------+
 ; Partition Name ; Elapsed Time ;
 +----------------+--------------+
-; Top            ; 00:00:00     ;
+; Top            ; 00:00:01     ;
 +----------------+--------------+
 
 
@@ -361,38 +346,32 @@ Note: In order to hide this table in the UI and the text report file, please set
 Info: *******************************************************************
 Info: Running Quartus Prime Analysis & Synthesis
     Info: Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition
-    Info: Processing started: Tue Feb 18 09:05:54 2025
+    Info: Processing started: Sat Mar  1 18:22:33 2025
 Info: Command: quartus_map --read_settings_files=on --write_settings_files=off Proyecto_SIMP -c SIMP
 Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
 Info (20030): Parallel compilation is enabled and will use 4 of the 4 processors detected
 Info (12021): Found 2 design units, including 2 entities, in source file /home/jonathan/Documents/Universidad/Digital/SIMP/src/top_module/simp.v
-    Info (12023): Found entity 1: i2c_master File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/interfaces/i2c/i2c_master.v Line: 5
+    Info (12023): Found entity 1: i2c_master File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/interfaces/i2c/i2c_master.v Line: 1
     Info (12023): Found entity 2: simp File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/top_module/simp.v Line: 3
 Info (12127): Elaborating entity "simp" for the top level hierarchy
-Warning (10230): Verilog HDL assignment warning at simp.v(10): truncated value with size 8 to match size of target (7) File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/top_module/simp.v Line: 10
-Info (12128): Elaborating entity "i2c_master" for hierarchy "i2c_master:i2c_master_uut" File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/top_module/simp.v Line: 64
-Warning (10235): Verilog HDL Always Construct warning at i2c_master.v(42): variable "busy" is read inside the Always Construct but isn't in the Always Construct's Event Control File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/interfaces/i2c/i2c_master.v Line: 42
-Warning (10230): Verilog HDL assignment warning at i2c_master.v(85): truncated value with size 32 to match size of target (4) File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/interfaces/i2c/i2c_master.v Line: 85
-Warning (10230): Verilog HDL assignment warning at i2c_master.v(106): truncated value with size 32 to match size of target (4) File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/interfaces/i2c/i2c_master.v Line: 106
-Warning (10230): Verilog HDL assignment warning at i2c_master.v(126): truncated value with size 32 to match size of target (4) File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/interfaces/i2c/i2c_master.v Line: 126
-Warning (13009): TRI or OPNDRN buffers permanently enabled
-    Warning (13010): Node "i2c_master:i2c_master_uut|sda~synth" File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/interfaces/i2c/i2c_master.v Line: 18
-Warning (13024): Output pins are stuck at VCC or GND
-    Warning (13410): Pin "scl" is stuck at VCC File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/top_module/simp.v Line: 5
-Info (17049): 4 registers lost all their fanouts during netlist optimizations.
+Info (12128): Elaborating entity "i2c_master" for hierarchy "i2c_master:i2c_master_uut" File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/top_module/simp.v Line: 67
+Warning (10230): Verilog HDL assignment warning at i2c_master.v(78): truncated value with size 32 to match size of target (4) File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/interfaces/i2c/i2c_master.v Line: 78
+Warning (10230): Verilog HDL assignment warning at i2c_master.v(98): truncated value with size 32 to match size of target (4) File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/interfaces/i2c/i2c_master.v Line: 98
+Warning (10230): Verilog HDL assignment warning at i2c_master.v(115): truncated value with size 32 to match size of target (4) File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/interfaces/i2c/i2c_master.v Line: 115
+Info (13000): Registers with preset signals will power-up high File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/interfaces/i2c/i2c_master.v Line: 12
+Info (13003): DEV_CLRn pin will set, and not reset, register with preset signal due to NOT Gate Push-Back
+Info (286030): Timing-Driven Synthesis is running
 Info (16010): Generating hard_block partition "hard_block:auto_generated_inst"
     Info (16011): Adding 0 node(s), including 0 DDIO, 0 PLL, 0 transceiver and 0 LCELL
-Warning (21074): Design contains 2 input pin(s) that do not drive logic
-    Warning (15610): No output dependent on input pin "start" File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/top_module/simp.v Line: 8
-    Warning (15610): No output dependent on input pin "clk" File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/top_module/simp.v Line: 4
-Info (21057): Implemented 4 device resources after synthesis - the final resource count might be different
-    Info (21058): Implemented 2 input pins
-    Info (21059): Implemented 1 output pins
+Info (21057): Implemented 42 device resources after synthesis - the final resource count might be different
+    Info (21058): Implemented 3 input pins
+    Info (21059): Implemented 5 output pins
     Info (21060): Implemented 1 bidirectional pins
-Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 13 warnings
-    Info: Peak virtual memory: 351 megabytes
-    Info: Processing ended: Tue Feb 18 09:06:08 2025
-    Info: Elapsed time: 00:00:14
-    Info: Total CPU time (on all processors): 00:00:39
+    Info (21061): Implemented 33 logic cells
+Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 4 warnings
+    Info: Peak virtual memory: 390 megabytes
+    Info: Processing ended: Sat Mar  1 18:22:42 2025
+    Info: Elapsed time: 00:00:09
+    Info: Total CPU time (on all processors): 00:00:23
 
 

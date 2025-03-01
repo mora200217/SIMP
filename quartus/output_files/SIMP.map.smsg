@@ -1,0 +1,1 @@
+Info (10281): Verilog HDL Declaration information at i2c_master.v(4): object "start" differs only in case from object "START" in the same scope File: /home/jonathan/Documents/Universidad/Digital/SIMP/src/interfaces/i2c/i2c_master.v Line: 4

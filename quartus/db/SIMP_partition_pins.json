@@ -2,7 +2,44 @@
 	"partitions" : [
 		{
 			"name" : "Top",
-			"pins" : []
+			"pins" : [
+				{
+					"name" : "scl",
+					"strict" : false
+				},
+				{
+					"name" : "state_ind[0]",
+					"strict" : false
+				},
+				{
+					"name" : "state_ind[1]",
+					"strict" : false
+				},
+				{
+					"name" : "state_ind[2]",
+					"strict" : false
+				},
+				{
+					"name" : "state_ind[3]",
+					"strict" : false
+				},
+				{
+					"name" : "sda",
+					"strict" : false
+				},
+				{
+					"name" : "clk",
+					"strict" : false
+				},
+				{
+					"name" : "rst_n",
+					"strict" : false
+				},
+				{
+					"name" : "start",
+					"strict" : false
+				}
+			]
 		}
 	]
 }
