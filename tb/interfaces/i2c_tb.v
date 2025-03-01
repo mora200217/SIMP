@@ -15,7 +15,8 @@ module tb_i2c_master;
     wire sda;
 
     reg sda_slave;   // Simulated slave SDA line
-    assign sda = (sda_slave) ? 1'bz : 0; // Open-drain emulation
+    reg sda_from_slave; 
+
 
     // Instantiate I2C Master
     i2c_master uut(
@@ -37,13 +38,14 @@ module tb_i2c_master;
 
     initial begin
         // Initialize signals
+        sda_slave = 0; 
         clk = 0;
         rst_n = 0;
         start = 0;
         read_write = 0;
         slave_addr = 7'b1010101; // Example address
         data_in = 8'h3C;
-        sda_slave = 1;
+        sda_slave = 0;
         
 
         #20 rst_n = 1;  // Release reset
@@ -54,22 +56,32 @@ module tb_i2c_master;
         #10 start = 0;
 
         // Simulate data from slave
-        #50 sda_slave = 0; // ACK
-        #50 sda_slave = 1; // Data bit 1
-        #50 sda_slave = 0; // Data bit 0
-        #50 sda_slave = 1; // Data bit 0
-        #50 sda_slave = 1; // Data bit 0
-        #50 sda_slave = 1; // Data bit 0
-        #50 sda_slave = 1; // Data bit 0
-        #50 sda_slave = 0; // Data bit 0
-        #50 sda_slave = 1; // Stop
+        #100
+        sda_slave = 1; 
+        sda_from_slave = 0; // ACK
+        #10 sda_from_slave = 1; // Data bit 1
+        #10 sda_from_slave = 0; // Data bit 0
+        #10 sda_from_slave = 1; // Data bit 0
+        #10 sda_from_slave = 1; // Data bit 0
+        #10 sda_from_slave = 1; // Data bit 0
+        #10 sda_from_slave = 1; // Data bit 0
+        #10 sda_from_slave = 0; // Data bit 0
+        #10 sda_from_slave = 1; // Stop
+
+        #100
+        // sda_slave = 0; 
+        // sda_from_slave = 0; 
+        #50
+        sda_slave = 0; 
 
         $finish;
     end
 
+    assign sda = (sda_slave) ? sda_from_slave :  1'bz ; // Open-drain emulation
+
     initial begin:TEST_BENCH
         $dumpfile("i2c_sim.vcd"); 
-        $dumpvars(1, uut); 
+        $dumpvars(0, uut); 
     end 
 
 endmodule
