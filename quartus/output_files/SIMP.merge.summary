@@ -1,0 +1,14 @@
+Partition Merge Status : Successful - Sun Mar  2 13:07:00 2025
+Quartus Prime Version : 23.1std.1 Build 993 05/14/2024 SC Lite Edition
+Revision Name : SIMP
+Top-level Entity Name : simp
+Family : Cyclone IV E
+Total logic elements : 716
+    Total combinational functions : 522
+    Dedicated logic registers : 484
+Total registers : 484
+Total pins : 12
+Total virtual pins : 0
+Total memory bits : 1,024
+Embedded Multiplier 9-bit elements : 0
+Total PLLs : 0

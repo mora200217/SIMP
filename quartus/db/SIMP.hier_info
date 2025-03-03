@@ -1,16 +1,28 @@
 |simp
-clk => clk.IN1
+clk => clk_div.CLK
+clk => clock_divider[0].CLK
+clk => clock_divider[1].CLK
+clk => clock_divider[2].CLK
+clk => clock_divider[3].CLK
+clk => clock_divider[4].CLK
+clk => clock_divider[5].CLK
+clk => clock_divider[6].CLK
+clk => clock_divider[7].CLK
 scl <= i2c_master:i2c_master_uut.scl
-sda <> i2c_master:i2c_master_uut.sda
+sda <> sda
 start => start.IN1
 rst_n => rst_n.IN1
 state_ind[0] <= i2c_master:i2c_master_uut.state_ind
 state_ind[1] <= i2c_master:i2c_master_uut.state_ind
 state_ind[2] <= i2c_master:i2c_master_uut.state_ind
 state_ind[3] <= i2c_master:i2c_master_uut.state_ind
+led <= <GND>
+led_active <= <VCC>
+led_inactive <= <GND>
 
 
 |simp|i2c_master:i2c_master_uut
+clk => scl.DATAB
 clk => shift_reg[0].CLK
 clk => shift_reg[1].CLK
 clk => shift_reg[2].CLK
@@ -39,7 +51,14 @@ clk => state[0].CLK
 clk => state[1].CLK
 clk => state[2].CLK
 clk => state[3].CLK
-clk => scl~reg0.CLK
+rst_n => data_out[0]~reg0.ACLR
+rst_n => data_out[1]~reg0.ACLR
+rst_n => data_out[2]~reg0.ACLR
+rst_n => data_out[3]~reg0.ACLR
+rst_n => data_out[4]~reg0.ACLR
+rst_n => data_out[5]~reg0.ACLR
+rst_n => data_out[6]~reg0.ACLR
+rst_n => data_out[7]~reg0.ACLR
 rst_n => done~reg0.ACLR
 rst_n => busy~reg0.ACLR
 rst_n => sda_enable_master.PRESET
@@ -48,16 +67,7 @@ rst_n => state[0].ACLR
 rst_n => state[1].ACLR
 rst_n => state[2].ACLR
 rst_n => state[3].ACLR
-rst_n => scl~reg0.PRESET
 rst_n => shift_reg[0].ENA
-rst_n => data_out[7]~reg0.ENA
-rst_n => data_out[6]~reg0.ENA
-rst_n => data_out[5]~reg0.ENA
-rst_n => data_out[4]~reg0.ENA
-rst_n => data_out[3]~reg0.ENA
-rst_n => data_out[2]~reg0.ENA
-rst_n => data_out[1]~reg0.ENA
-rst_n => data_out[0]~reg0.ENA
 rst_n => bit_count[3].ENA
 rst_n => bit_count[2].ENA
 rst_n => bit_count[1].ENA
@@ -108,7 +118,7 @@ data_out[6] <= data_out[6]~reg0.DB_MAX_OUTPUT_PORT_TYPE
 data_out[7] <= data_out[7]~reg0.DB_MAX_OUTPUT_PORT_TYPE
 busy <= busy~reg0.DB_MAX_OUTPUT_PORT_TYPE
 done <= done~reg0.DB_MAX_OUTPUT_PORT_TYPE
-scl <= scl~reg0.DB_MAX_OUTPUT_PORT_TYPE
+scl <= scl.DB_MAX_OUTPUT_PORT_TYPE
 sda <> sda
 state_ind[0] <= state[0].DB_MAX_OUTPUT_PORT_TYPE
 state_ind[1] <= state[1].DB_MAX_OUTPUT_PORT_TYPE
