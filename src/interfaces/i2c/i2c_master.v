@@ -92,7 +92,7 @@ module i2c_master (
 							sda_enable_master <= 0;  // Release SDA for ACK
 							
 							 // Introduce a small delay before checking for ACK (one clock cycle)
-							 if (scl) begin  // Wait for the SCL to be high (slave should drive SDA low)
+							 // Wait for the SCL to be high (slave should drive SDA low)
 								  if (!sda) begin  // Slave ACK received (SDA low during SCL high)
 										state <= (read_write) ? READ : WRITE;  // Proceed based on read/write
 										shift_reg <= data_in;  // Load data for write operation
@@ -100,7 +100,7 @@ module i2c_master (
 								  end else begin  // NACK condition (SDA is high)
 										state <= STOP;  // Stop the I2C transaction
 								  end
-							 end
+						
 end
 
 
