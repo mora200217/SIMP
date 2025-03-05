@@ -1,4 +1,4 @@
-`include "../src/interfaces/i2c/i2c_master.v"
+`include "../src/interfaces/i2c/i2c_controller_master.v"
 
 module simp (
     input clk,               // FPGA built-in clock
@@ -47,36 +47,23 @@ module simp (
         end
     end
 	 
-	  // Clock divider for 4generating the I2C clock (adjust for 100kHz)
-    always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            clock_divider <= 8'd0;
-        end else begin
-            if (clock_divider == 8'd249) begin  // 50 MHz -> 100 kHz, adjust divider for your system clock
-                clk_div <= ~clk_div;  // Toggle SCL to generate I2C clock
-                clock_divider <= 8'd0;  // Reset divider
-            end else begin
-                clock_divider <= clock_divider + 1;
-            end
-        end
-    end
+    
+    // Commnunication interfaes 
+    // i2c 
 
-    // I2C Master instance
-    i2c_master i2c_master_uut (
-        .clk(clk_div),
-        .rst_n(rst_n),
-        .start(start),
-        .read_write(read_write),
-        .slave_addr(slave_addr),
-        .reg_addr(reg_addr),
-        .data_in(data_in),
-        .data_out(data_out),
-        .busy(busy),
-        .done(done),
-        .scl(scl_reg),
-        .sda(sda_reg),
-        .state_ind(state_ind),
-    );
+    i2c_controller_master master_uut(
+        .clk(clk), // clk principal sin division de freq 
+        .rst(!rst_n), // reset no negado 
+        .addr(slave_addr), // Direccion de esclavo para abrir el bus de comununicacion 
+        .data_in(data_in), 
+        .enable(start), 
+        .rw(read_write), 
+        .data_out(data_out), 
+        .ready(done), 
+        .i2c_sda(sda), 
+        .i2c_scl(scl)
+    ); 
+
 
     // Control logic for handling state transitions and I2C read/write operations
 

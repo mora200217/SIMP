@@ -26,7 +26,7 @@ module i2c_controller(
 	localparam READ_ACK2 = 7;
 	localparam STOP = 8;
 	
-	localparam DIVIDE_BY = 10;
+	localparam DIVIDE_BY = 500;
 
 	reg [7:0] state;
 	reg [7:0] saved_addr;

@@ -62,18 +62,19 @@ module i2c_controller_tb;
 		data_in = 8'b10101010;
 		rw = 0;	
 		enable = 1;
-		#10;
+		#1000;
 		enable = 0;
-		
+		#100; 
+        $finish; 
+
 		
 	end   
 
     initial begin:DUMPS
         $dumpfile("i2c_simple_imp.vcd"); 
-        $dumpvars(-1, master,slave); 
-        		
-		#10000
-		$finish;
+        $dumpvars(-1, master); 
+        	
+		
     end 
 
 endmodule
