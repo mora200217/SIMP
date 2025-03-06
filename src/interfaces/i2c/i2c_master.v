@@ -13,7 +13,7 @@ module i2c_master (
 );
 
     // I2C Clock Divider: Generate 100 kHz from 50 MHz
-    reg [8:0] clk_div;  // 9-bit counter for 50 MHz to 100 kHz division
+    reg [8:0] clk_div;
     reg scl_int;
 
     always @(posedge clk or negedge rst_n) begin
@@ -22,33 +22,31 @@ module i2c_master (
             scl_int <= 1;
         end else if (clk_div == 249) begin  // 50M / (2 * 100k) - 1 = 249
             clk_div <= 0;
-            scl_int <= ~scl_int; // Toggle to generate 100 kHz clock
+            scl_int <= ~scl_int;
         end else begin
             clk_div <= clk_div + 1;
         end
     end
 
-    assign scl = scl_int;  // Assign SCL output
+    assign scl = scl_int;
 
-    // FSM State Definitions
-    typedef enum logic [3:0] {
-        IDLE  = 4'b0000,
-        START = 4'b0001,
-        ADDR  = 4'b0010,
-        ACK1  = 4'b0011,
-        WRITE = 4'b0100,
-        ACK2  = 4'b0101,
-        READ  = 4'b0110,
-        STOP  = 4'b0111
-    } state_t;
+    // FSM State Definitions using localparam
+    localparam IDLE  = 4'b0000;
+    localparam START = 4'b0001;
+    localparam ADDR  = 4'b0010;
+    localparam ACK1  = 4'b0011;
+    localparam WRITE = 4'b0100;
+    localparam ACK2  = 4'b0101;
+    localparam READ  = 4'b0110;
+    localparam STOP  = 4'b0111;
 
-    state_t state;
+    reg [3:0] state;
     reg [7:0] shift_reg;
     reg [3:0] bit_count;
     reg sda_out;
     reg sda_enable;
 
-    assign sda = (sda_enable) ? sda_out : 1'bz;  // Open-drain SDA line
+    assign sda = (sda_enable) ? sda_out : 1'bz;
 
     always @(posedge scl_int or negedge rst_n) begin
         if (!rst_n) begin
@@ -69,9 +67,9 @@ module i2c_master (
                 end
 
                 START: begin
-                    sda_out <= 0;  // Start condition: SDA goes low while SCL is high
+                    sda_out <= 0;
                     state <= ADDR;
-                    shift_reg <= {slave_addr, read_write}; // Load address and R/W bit
+                    shift_reg <= {slave_addr, read_write};
                     bit_count <= 8;
                 end
 
@@ -81,18 +79,18 @@ module i2c_master (
                         shift_reg <= shift_reg << 1;
                         bit_count <= bit_count - 1;
                     end else begin
-                        sda_enable <= 0; // Release SDA for ACK
+                        sda_enable <= 0;
                         state <= ACK1;
                     end
                 end
 
                 ACK1: begin
-                    if (!sda) begin // ACK received (SDA low)
+                    if (!sda) begin
                         state <= (read_write) ? READ : WRITE;
                         shift_reg <= data_in;
                         bit_count <= 8;
                     end else begin
-                        state <= STOP; // NACK detected
+                        state <= STOP;
                     end
                 end
 
@@ -103,22 +101,22 @@ module i2c_master (
                         shift_reg <= shift_reg << 1;
                         bit_count <= bit_count - 1;
                     end else begin
-                        sda_enable <= 0; // Release SDA for ACK
+                        sda_enable <= 0;
                         state <= ACK2;
                     end
                 end
 
                 ACK2: begin
-                    if (!sda) begin // ACK received
+                    if (!sda) begin
                         state <= STOP;
                     end else begin
-                        state <= STOP; // NACK detected
+                        state <= STOP;
                     end
                 end
 
                 READ: begin
                     if (bit_count > 0) begin
-                        sda_enable <= 0; // Release SDA for reading
+                        sda_enable <= 0;
                         data_out <= {data_out[6:0], sda};
                         bit_count <= bit_count - 1;
                     end else begin
@@ -129,7 +127,7 @@ module i2c_master (
                 STOP: begin
                     sda_enable <= 1;
                     sda_out <= 0;
-                    sda_out <= 1;  // Stop condition
+                    sda_out <= 1;
                     done <= 1;
                     busy <= 0;
                     state <= IDLE;
