@@ -49,12 +49,13 @@ module i2c_controller_tb;
 	end
 
 	initial begin
+		enable = 0; 
 		// Initialize Inputs
 		clk = 0;
 		rst = 1;
 
 		// Wait 100 ns for global reset to finish
-		#100;
+		#30;
         
 		// Add stimulus here
 		rst = 0;		
@@ -62,7 +63,7 @@ module i2c_controller_tb;
 		data_in = 8'b10101010;
 		rw = 0;	
 		enable = 1;
-		#1000;
+		#10;
 		enable = 0;
 		#100; 
         $finish; 
