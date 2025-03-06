@@ -42,7 +42,7 @@ module tb_i2c_master;
         clk = 0;
         rst_n = 0;
         start = 0;
-        read_write = 0;
+        read_write = 1  ;
         slave_addr = 7'b1010101; // Example address
         data_in = 8'h3C;
         sda_slave = 0;
