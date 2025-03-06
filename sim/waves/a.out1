@@ -1,10 +1,6 @@
-**** module/scope: bcd
+**** module/scope: flex_sensor
      Flip-Flops   : 0
-     Logic Gates  : 352
-     EQUALITY[4]: 16 units
-     MUX[2]: 112 slices
+     Logic Gates  : 0
 **** TOTALS
      Flip-Flops   : 0
-     Logic Gates  : 352
-     EQUALITY[4]: 16 units
-     MUX[2]: 112 slices
+     Logic Gates  : 0

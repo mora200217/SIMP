@@ -34,6 +34,7 @@ module simp (
     reg [6:0] reg_addr;           // Register address (e.g., for ACCX_LSB)
 	    reg [7:0] clock_divider;  // Clock divider for generating I2C clock
 		 reg clk_div; 
+
     // Default values during initialization
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
@@ -47,6 +48,9 @@ module simp (
         end
     end
 	 
+     /* 
+    
+     */ 
     
     // Commnunication interfaes 
     // i2c 
