@@ -1,4 +1,6 @@
-`include "../src/interfaces/i2c/i2c_controller_master.v"
+// `include "../src/interfaces/i2c/i2c_controller_master.v"
+`include "src/utils/freq_div.v"
+`include "src/interfaces/i2c/i2c_master.v"
 
 module simp (
     input clk,               // FPGA built-in clock
@@ -55,25 +57,49 @@ module simp (
     // Commnunication interfaes 
     // i2c 
 
-    i2c_controller_master master_uut(
-        .clk(clk), // clk principal sin division de freq 
-        .rst(!rst_n), // reset no negado 
-        .addr(slave_addr), // Direccion de esclavo para abrir el bus de comununicacion 
-        .data_in(data_in), 
-        .enable(start), 
-        .rw(read_write), 
-        .data_out(data_out), 
-        .ready(done), 
-        .i2c_sda(sda), 
-        .i2c_scl(scl)
+    // i2c_controller_master master_uut(
+    //     .clk(clk), // clk principal sin division de freq 
+    //     .rst(!rst_n), // reset no negado 
+    //     .addr(slave_addr), // Direccion de esclavo para abrir el bus de comununicacion 
+    //     .data_in(data_in), 
+    //     .enable(start), 
+    //     .rw(read_write), 
+    //     .data_out(data_out), 
+    //     .ready(done), 
+    //     .i2c_sda(sda), 
+    //     .i2c_scl(scl)
+    // ); 
+
+    wire [2:0] o_status; 
+    wire [7:0] o_data; 
+    wire strobe; 
+
+
+    freq_div #(
+        .N(500),                   // Divide by 500
+        .COUNT_SIZE(9)             // 9-bit counter (since 500 < 2^9)
+    ) clk_div_inst (
+        .in_clk(clk),         // 50 MHz input clock
+        .out_clk(clk_100kHz)        // 100 kHz output clock
+    );
+
+    i2c_master master_uut(
+    .i_addr_data(slave_addr),		// Address and Data
+    .i_cmd(read_write),			// Command (r/w)
+    .i_strobe(strobe),			// Latch inputs
+    .i_clk(clk_100kHz),
+    .io_sda(sda),
+    .io_scl(scl),
+    .o_data(o_data),		// Output data on reads
+    .o_status(o_status)
     ); 
 
 
     // Control logic for handling state transitions and I2C read/write operations
 
     // Assign I2C signals
-    assign sda = sda_reg;  // Drive sda_reg for write, or release for reading
-    assign scl = scl_reg;
+    // assign sda = sda_reg;  // Drive sda_reg for write, or release for reading
+    // assign scl = scl_reg;
 
  
 
