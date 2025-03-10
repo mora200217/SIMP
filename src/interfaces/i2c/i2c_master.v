@@ -1,256 +1,91 @@
-/*
- * An i2c master controller implementation. 7-bit address 8-bit data, r/w.
- *
- * Copyright (c) 2015 Joel Fernandes <joel@linuxinternals.org>
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- */
+module i2c_master (
+    input wire clk_50mhz,         // 50 MHz clock input
+    input wire rst,               // Reset input
+    input wire [7:0] slave_addr,  // Slave address
+    input wire [7:0] reg_addr,    // Register address to read from
+    output reg [7:0] data_out,    // Data read from the register
+    output reg scl,               // I2C Clock line (SCL)
+    inout wire sda,               // I2C Data line (SDA)
+    output reg ready,             // Ready signal to indicate that I2C transaction is done
+    output reg ack                // Acknowledgment signal
+);
 
-`timescale 1ns / 1ps
+    // Internal registers for state machine and timing
+    reg [7:0] byte_data;          // Data byte for I2C transfer
+    reg [7:0] byte_count;         // Byte count for read operation
+    reg [7:0] read_data;          // Data read from slave
+    reg [3:0] state;              // State machine state
+    reg [15:0] clock_divider;     // Clock divider for generating 100 kHz clock from 50 MHz
 
-module i2c_master(
-    input [7:0] i_addr_data,		// Address and Data
-    input i_cmd,			// Command (r/w)
-    input i_strobe,			// Latch inputs
-    input i_clk,
-    inout io_sda,
-    output io_scl,
-    output reg [7:0] o_data,		// Output data on reads
-    output wire [2:0] o_status		// Request status
-    );
+    // Clock divider for generating 100 kHz clock from 50 MHz input clock
+    always @(posedge clk_50mhz or posedge rst) begin
+        if (rst) begin
+            clock_divider <= 0;
+            scl <= 1; // Default state for SCL (idle)
+        end else if (clock_divider == 499) begin
+            scl <= ~scl;  // Toggle SCL every 500 clock cycles (100 kHz)
+            clock_divider <= 0;  // Reset the clock divider
+        end else begin
+            clock_divider <= clock_divider + 1;
+        end
+    end
 
-parameter ST_CMD_ADDR = 1,
-		 ST_CMD_DATA = 2,
-		 ST_SEND_START = 3,
-		 ST_RD_DATA = 4,
-		 ST_WR_DATA = 5,
-		 ST_SEND_STOP = 6,
-		 ST_CHECK_WR_ACK = 7,
-		 ST_CHECK_ADDR_ACK = 8,
-		 ST_SEND_ACK = 9,
-		 ST_WR_ADDR = 10;
+    // Tri-state the SDA line
+    assign sda = (state == 4'd0) ? 1'bz : byte_data[7];  // High-Z when idle
 
-reg [6:0] addr;	// Address
-reg cmd;
-wire [7:0] addr_cmd;
-assign addr_cmd = {addr, cmd};
+    // State machine for I2C transactions
+    always @(posedge scl or posedge rst) begin
+        if (rst) begin
+            state <= 4'd0;          // Reset state machine to idle state
+            ready <= 1'b1;          // Indicate that the module is ready
+            ack <= 1'b0;            // Clear ACK
+            byte_count <= 8'd0;     // Reset byte counter
+        end else begin
+            case (state)
+                4'd0: begin // Idle State - Wait for Start Condition
+                    ready <= 1'b1;
+                    if (ready) begin
+                        state <= 4'd1;  // Transition to start condition state
+                    end
+                end
+                4'd1: begin // Start condition
+                    byte_data <= {1'b0, slave_addr, 1'b0};  // Send Start bit and slave address
+                    state <= 4'd2;  // Move to transmit state
+                end
+                4'd2: begin // Transmit slave address
+                    ack <= sda;  // Check for ACK from slave
+                    if (ack) begin
+                        byte_data <= reg_addr;  // Send register address to read from
+                        state <= 4'd3;  // Move to register address transmit state
+                    end else begin
+                        state <= 4'd0;  // Go back to idle state if no ACK
+                    end
+                end
+                4'd3: begin // Transmit register address
+                    ack <= sda;  // Check for ACK from slave
+                    if (ack) begin
+                        state <= 4'd4;  // Move to read data state
+                    end else begin
+                        state <= 4'd0;  // Go back to idle state if no ACK
+                    end
+                end
+                4'd4: begin // Read data from slave
+                    read_data <= sda;  // Read 1 bit of data from slave
+                    byte_count <= byte_count + 1; // Increment byte counter
+                    if (byte_count == 8'd7) begin
+                        data_out <= read_data; // Store the received data
+                        state <= 4'd5;  // Move to stop condition state
+                    end
+                end
+                4'd5: begin // Stop condition
+                    byte_data <= 8'b11111111;  // Send stop condition (SDA high while SCL is high)
+                    state <= 4'd0;  // Go back to idle state
+                end
+                default: begin
+                    state <= 4'd0;  // Default to idle state
+                end
+            endcase
+        end
+    end
 
-reg status_err_nack_addr, status_err_nack_data, status_data_ready;
-assign o_status = {status_err_nack_addr, status_err_nack_data, status_data_ready };
-
-assign io_sda = reg_sda;
-reg reg_sda;
-	 
-reg [3:0] state;
-reg [3:0] pos_state;
-reg [3:0] pos_count;
-reg [3:0] neg_state;
-reg [3:0] neg_count;
-
-reg wr_sda_neg;
-reg wr_sda_pos;	/* Write enable for positive or negative edge of clock  */
-reg reg_sda_pos;
-reg reg_sda_neg;	/* Data register for SDA for positive or negative clock */
-reg [7:0] in_data;/* Data latched from input for write or Buffer for read*/
-
-assign io_scl = i_clk;
-initial
-begin
-	wr_sda_neg = 0;
-	wr_sda_pos = 0;
-	reg_sda_neg = 0;
-	reg_sda_pos = 0;
-	status_err_nack_addr = 0;
-	status_err_nack_data = 0;
-	status_data_ready = 0;
-	pos_state = ST_CMD_ADDR;
-	neg_state = 0;
-	pos_count = 8;
-	neg_count = 9;
-end
-
-/*
- * There are 2 state variables triggered on pos and neg edge.
- * Always set the state sampled on the next edge based
- * on what the state changed to on the previous edge.
- * This will prevent the following case:
- * on falling edge, state change to check ack. on rising edge,
- * ack is checked and state is changed to write-data. then on
- * next following edge, state should be write-data and not
- * (write-data | check-ack). So we use a priority logic. The or
- * logic wont work. */
-
-always @*
-begin
-	case (i_clk)
-		1:
-		begin
-			if (pos_state != 0)
-				state <= pos_state;
-			else
-				state <= neg_state;
-
-			/*
-			 * Carry forward the bit being written in the previous edge
-			 * (pos/neg) if nothing is to be written on the current edge.
-			 * This will make sure data remains written for a complete
-			 * clock cycle.
-			 */
-			if (wr_sda_pos == 1'b1)
-				reg_sda = reg_sda_pos;
-			else if(wr_sda_neg == 1'b1)
-				reg_sda = reg_sda_neg;
-			else
-				reg_sda = 1'bZ;
-		end
-		0:
-		begin
-			if (neg_state != 0)
-					state <= neg_state;
-			else
-					state <= pos_state;
-
-			if (wr_sda_neg == 1'b1)
-				reg_sda = reg_sda_neg;
-			else if(wr_sda_pos == 1'b1)
-				reg_sda = reg_sda_pos;
-			else
-				reg_sda = 1'bZ;
-		end
-		endcase;
-end
-
-always @(posedge i_clk)
-begin
-	pos_state <= 0;
-	wr_sda_pos <= 0;
-
-	case(state)
-	ST_CMD_ADDR:
-	if (i_strobe)
-	begin
-		addr <= i_addr_data[6:0];
-		cmd <= i_cmd;
-		if (i_cmd == 1)				// Read
-			pos_state <= ST_SEND_START;
-		else
-			pos_state <= ST_CMD_DATA;
-	end
-	else
-			pos_state <= ST_CMD_ADDR;
-
-	ST_CMD_DATA:
-	if (i_strobe)
-	begin
-		in_data <= i_addr_data;
-		pos_state <= ST_SEND_START;
-	end
-
-	ST_SEND_START:
-	begin
-		wr_sda_pos <= 1;
-		reg_sda_pos <= 0;
-		pos_state <= ST_WR_ADDR;
-	end
-	ST_SEND_STOP:
-	begin
-		wr_sda_pos <= 1;
-		reg_sda_pos <= 1;
-		pos_state <= ST_CMD_ADDR;
-		status_data_ready <= 1;
-	end
-	
-	ST_SEND_ACK:
-	begin
-	/* Ack was sent last falling edge, and the slave is sampling it.
-	 * Prepare for Stop command next falling edge */
-		pos_state <= ST_SEND_STOP;
-		o_data <= in_data;
-	end
-	endcase
-
-	if (state == ST_CHECK_WR_ACK || state == ST_CHECK_ADDR_ACK)
-		if (io_sda != 0)				/* Its a write NACK */
-		begin
-			if (state == ST_CHECK_ADDR_ACK)
-				status_err_nack_addr <= 1;
-			else
-				status_err_nack_data <= 1;
-			pos_state <= ST_CMD_ADDR;	/* Back to default state; */
-		end
-		else
-		begin
-			if (state == ST_CHECK_ADDR_ACK)
-				if (cmd == 1)
-					pos_state <= ST_RD_DATA;
-				else
-					pos_state <= ST_WR_DATA;
-			else
-				pos_state <= ST_SEND_STOP;
-		end
-
-	if (state == ST_RD_DATA)
-	begin
-		if (pos_count > 0)
-		begin
-			in_data[pos_count-1] <= io_sda;	// pos_count = 8..1
-			pos_count <= pos_count - 1'b1;
-		end
-		if (pos_count == 1)
-		begin
-			/*
-			 * We just read the last data bit. Prepare to put Ack on the bus on the
-			 * next falling edge.
-			 */
-			 pos_state <= ST_SEND_ACK;
-			 pos_count <= 8;
-		end
-		else
-			/*
-			 * More bits to go, continue to read
-			 */
-			pos_state <= ST_RD_DATA;
-	end
-end
-
-always @(negedge i_clk)
-begin
-	neg_state <= 0;
-	wr_sda_neg <= 0; /* Always release bus on next falling edge by default */
-
-	if (state == ST_WR_DATA || state == ST_WR_ADDR)
-	begin
-		if (neg_count == 1)
-		begin
-			neg_count <= 9;			/* Reset counter for future use */
-			if (state == ST_WR_DATA)
-				neg_state <= ST_CHECK_WR_ACK;
-			else
-				neg_state <= ST_CHECK_ADDR_ACK;
-		end
-		else
-		begin
-			wr_sda_neg <= 1;
-			if (state == ST_WR_DATA)
-				reg_sda_neg <= in_data[neg_count - 2]; /* neg_count = 9..2 */
-			else
-				reg_sda_neg <= addr_cmd[neg_count - 2];
-			neg_count <= neg_count - 1'b1;
-			neg_state <= state;		/* Continue to write data or address */
-		end
-	end
-
-	if (state == ST_SEND_STOP || state == ST_SEND_ACK)
-	begin
-		/*
-		 * Before next rising edge, pull the Data line low.
-		 * Incase of stop command, next rising edge will pull line high.
-		 * Incase of Ack, next rising edge will keep line low to signal Ack.
-		 */
-		wr_sda_neg <= 1;
-		reg_sda_neg <= 0;
-	end
-end
 endmodule

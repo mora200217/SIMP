@@ -1,106 +1,55 @@
-// `include "../src/interfaces/i2c/i2c_controller_master.v"
-`include "src/utils/freq_div.v"
-`include "src/interfaces/i2c/i2c_master.v"
-
 module simp (
-    input clk,               // FPGA built-in clock
-    output scl,              // Single master I2C clock
-    inout sda,               // Bidirectional I2C data line
-    input start,             // Start condition signal to trigger I2C transaction
-    input rst_n,             // Active-low reset signal
-    output wire [3:0] state_ind, // To indicate the state of the I2C transaction
-    output reg led,          // LED indicator for I2C transaction
-    output reg led_active,   // LED active state indicator
-    output reg led_inactive  // LED inactive state indicator
+    input wire rst,            // Reset signal
+    input wire clk_50m,        // 50 MHz clock
+    input wire wr_en,          // Write enable for transmitting data
+    output wire tx,            // UART transmit line to ESP32
+    output wire tx_busy,       // UART transmit busy signal
+    input wire rx,             // UART receive line (not used for sending)
+    output wire rdy,           // Ready signal (not used for sending)
+    input wire rdy_clr         // Clear ready signal (not used for sending)
 );
-    
-    wire sda_reg;
-    wire scl_reg;
-    
-    // IMU Device Address and Register Addresses
-    parameter [6:0] IMU_ADDR = 7'h68;  // Device address for IMU
-    parameter [6:0] ACCX_LSB_ADDR = 7'h12;  // Accelerometer X low byte address
-    parameter [6:0] ACCX_MSB_ADDR = 7'h13;  // Accelerometer X high byte address
-    parameter [6:0] ACCY_LSB_ADDR = 7'h14;  // Accelerometer Y low byte address
-    parameter [6:0] ACCY_MSB_ADDR = 7'h15;  // Accelerometer Y high byte address
-    parameter [6:0] ACCZ_LSB_ADDR = 7'h16;  // Accelerometer Z low byte address
-    parameter [6:0] ACCZ_MSB_ADDR = 7'h17;  // Accelerometer Z high byte address
 
-    // Internal wires and registers for I2C operation
-    wire done;
-    wire busy;
-    reg read_write;               // 1 = Read, 0 = Write
-    reg [6:0] slave_addr;         // Slave address (IMU)
-    reg [7:0] data_in;            // Data to be sent (for write operations)
-    wire [7:0] data_out;          // Data received (for read operations)
-    reg [6:0] reg_addr;           // Register address (e.g., for ACCX_LSB)
-	    reg [7:0] clock_divider;  // Clock divider for generating I2C clock
-		 reg clk_div; 
+    // Internal wires for the outputs from the flex sensor and IMU
+    wire [15:0] flex_out;      // Output from Flex Sensor
+    wire [15:0] imu_out;       // Output from IMU Sensor (Roll Angle)
 
-    // Default values during initialization
-    always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            led_active <= 1;
-            led_inactive <= 0;
-            led <= 0;
-            read_write <= 1;           // Default to read mode
-            slave_addr <= IMU_ADDR;    // Set the slave address for the IMU
-            reg_addr <= ACCX_LSB_ADDR; // Default to reading the accelerometer X low byte
-            data_in <= 0;              // No data to write for now
-        end
-    end
-	 
-     /* 
-    
-     */ 
-    
-    // Commnunication interfaes 
-    // i2c 
+    // Mean of flex and IMU
+    wire [15:0] mean_angle;    // Mean value of flex and imu sensor data
 
-    // i2c_controller_master master_uut(
-    //     .clk(clk), // clk principal sin division de freq 
-    //     .rst(!rst_n), // reset no negado 
-    //     .addr(slave_addr), // Direccion de esclavo para abrir el bus de comununicacion 
-    //     .data_in(data_in), 
-    //     .enable(start), 
-    //     .rw(read_write), 
-    //     .data_out(data_out), 
-    //     .ready(done), 
-    //     .i2c_sda(sda), 
-    //     .i2c_scl(scl)
-    // ); 
+    // Signals for the ESP32 UART module
+    wire esp32_wr_en;          // Write enable for sending data to ESP32
 
-    wire [2:0] o_status; 
-    wire [7:0] o_data; 
-    wire strobe; 
+    // Instantiate the flex_sensor module
+    // flex_sensor flex_inst (
+    //     .rst(rst),               // Reset signal
+    //     .decod(flex_out)         // Output to be connected to flex_out
+    // );
 
-
-    freq_div #(
-        .N(500),                   // Divide by 500
-        .COUNT_SIZE(9)             // 9-bit counter (since 500 < 2^9)
-    ) clk_div_inst (
-        .in_clk(clk),         // 50 MHz input clock
-        .out_clk(clk_100kHz)        // 100 kHz output clock
+    // Instantiate the imu_bmi160 module (IMU module for reading roll angle)
+    imu_bmi160 imu_inst (
+        .clk_50mhz(clk_50m),     // 50 MHz clock
+        .rst(rst),               // Reset signal
+        .slave_addr(8'h68),      // Example I2C address for BMI160 (can be changed)
+        .acc_x(),                // Not used for roll angle, you can ignore it
+        .acc_y(),                // Not used for roll angle, you can ignore it
+        .acc_z(),                // Not used for roll angle, you can ignore it
+        .ready(),                // Ready signal from IMU
+        .roll_angle(imu_out)     // Roll angle output from IMU
     );
 
-    i2c_master master_uut(
-    .i_addr_data(slave_addr),		// Address and Data
-    .i_cmd(read_write),			// Command (r/w)
-    .i_strobe(strobe),			// Latch inputs
-    .i_clk(clk_100kHz),
-    .io_sda(sda),
-    .io_scl(scl),
-    .o_data(o_data),		// Output data on reads
-    .o_status(o_status)
-    ); 
+    // Mean calculation (simple integer mean calculation)
+    assign mean_angle = (flex_out + imu_out) >> 1;  // Mean: (flex + imu) / 2
 
-
-    // Control logic for handling state transitions and I2C read/write operations
-
-    // Assign I2C signals
-    // assign sda = sda_reg;  // Drive sda_reg for write, or release for reading
-    // assign scl = scl_reg;
-
- 
+    // Instantiate the ESP32 UART module to send the mean angle
+    uart_send_float_to_esp32 esp32_inst (
+        .angle(mean_angle),      // The mean angle value to be sent
+        .wr_en(wr_en),           // Write enable for UART transmission
+        .clk_50m(clk_50m),       // Clock input
+        .tx(tx),                 // UART transmit line
+        .tx_busy(tx_busy),       // UART transmit busy signal
+        .rx(rx),                 // UART receive line (not used here)
+        .rdy(rdy),               // Ready signal (not used here)
+        .rdy_clr(rdy_clr)        // Clear ready signal (not used here)
+    );
 
 endmodule
